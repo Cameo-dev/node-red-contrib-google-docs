@@ -1,13 +1,13 @@
-module.exports = function (RED) {
+module.exports = function nodeExport(RED) {
   function GoogleAuthConfig(n) {
     RED.nodes.createNode(this, n);
 
-    if (!this.credentials.serviceAccountKey) throw 'Service account key is missing';
+    if (!this.credentials.serviceAccountKey) this.warn('Service account key is missing');
 
     try {
       this.serviceAccountKey = JSON.parse(this.credentials.serviceAccountKey);
     } catch (e) {
-      throw 'Bad service account json';
+      this.warn('Bad service account json');
     }
   }
 

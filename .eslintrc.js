@@ -6,6 +6,7 @@ module.exports = {
   },
   extends: [
     'airbnb-base',
+    'plugin:ava/recommended'
   ],
   globals: {
     Atomics: 'readonly',

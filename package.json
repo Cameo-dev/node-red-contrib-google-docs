@@ -4,7 +4,7 @@
   "description": "Let you access the Google Docs API from NodeRED",
   "main": "drive.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "ava \"test/**/*_spec.js\"",
     "lint": "eslint *.js --fix"
   },
   "keywords": [
@@ -27,8 +27,12 @@
     "mustache": "^4.0.1"
   },
   "devDependencies": {
+    "ava": "^3.8.1",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2"
+    "eslint-plugin-ava": "^10.3.0",
+    "eslint-plugin-import": "^2.20.2",
+    "node-red": "^1.0.6",
+    "node-red-node-test-helper": "^0.2.3"
   }
 }
