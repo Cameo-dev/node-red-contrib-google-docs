@@ -6,10 +6,15 @@
 			name: {value:""},
 			admin: {type: 'google auth', required: true},
 			fileId:{value: ""},
-			operation: {value: "get"},
+			operation: {value: "getFile"},
 			allDrives: {value: false},
 			targetName: {value: ""},
-      mime: {value: "nop"}
+			mime: {value: "nop"},
+			role: {value: "owner"},
+			permType: {value: "user"},
+			emailAddress: {value: ""},
+			domain: {value: ""},
+			allowFileDiscovery: {value: ""}
 		},
 		inputs:1,
 		outputs:1,
@@ -20,12 +25,47 @@
 		oneditprepare: function() {
 			$("#node-input-operation").on("change", function() {
 				const val = $(this).val();
-				if(val === 'copy') {
-					$("#node-input-targetName-row").show();
-					$("#node-input-mime-row").show();
-				} else {
-					$("#node-input-targetName-row").hide();
-					$("#node-input-mime-row").hide();
+				switch (val) {
+					case 'copyFile':
+						$("#node-input-targetName-row").show();
+						$("#node-input-mime-row").show();
+						$("#node-input-permType-row").hide();
+						$("#node-input-role-row").hide();
+						$("#node-input-permParams").hide();
+						break;
+					case 'createPerm':
+						$("#node-input-targetName-row").hide();
+						$("#node-input-mime-row").hide();
+						$("#node-input-permType-row").show();
+						$("#node-input-role-row").show();
+						$("#node-input-permParams").show();
+						break;
+					default:
+						$("#node-input-targetName-row").hide();
+						$("#node-input-mime-row").hide();
+						$("#node-input-permType-row").hide();
+						$("#node-input-role-row").hide();
+						$("#node-input-permParams").hide();
+				}
+			});
+			$("#node-input-permType").on("change", function() {
+				const val = $(this).val();
+				switch (val) {
+					case 'user':
+					case 'group':
+						$("#node-input-emailAddress-row").show();
+						$("#node-input-domain-row").hide();
+						$("#node-input-allowFileDiscovery-row").hide();
+						break;
+					case 'domain':
+						$("#node-input-emailAddress-row").hide();
+						$("#node-input-domain-row").show();
+						$("#node-input-allowFileDiscovery-row").show();
+						break;
+					case 'anyone':
+						$("#node-input-emailAddress-row").hide();
+						$("#node-input-domain-row").hide();
+						$("#node-input-allowFileDiscovery-row").show();
 				}
 			});
 		}
@@ -33,52 +73,86 @@
 </script>
 
 <script type="text/html" data-template-name="google-drive">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-admin"><i class="fa fa-cogs"></i> Admin</label>
-        <input type="text" id="node-input-admin" placeholder="Admin">
-    </div>
-    <div class="form-row">
-        <label for="node-input-fileId"><i class="fa fa-file-o"></i> File ID</label>
-        <input type="text" id="node-input-fileId" placeholder="File ID">
-    </div>
-    <div class="form-row">
-        <label for="node-input-operation"><i class="fa fa-magic"></i> Operation</label>
-        <select name="operation" id="node-input-operation">
-					<option value="get">Get</option>
-					<option value="copy">Copy</option>
+		<div class="form-row">
+				<label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+				<input type="text" id="node-input-name" placeholder="Name">
+		</div>
+		<div class="form-row">
+				<label for="node-input-admin"><i class="fa fa-cogs"></i> Admin</label>
+				<input type="text" id="node-input-admin" placeholder="Admin">
+		</div>
+		<div class="form-row">
+				<label for="node-input-fileId"><i class="fa fa-file-o"></i> File ID</label>
+				<input type="text" id="node-input-fileId" placeholder="File ID">
+		</div>
+		<div class="form-row">
+				<label for="node-input-operation"><i class="fa fa-magic"></i> Operation</label>
+				<select name="operation" id="node-input-operation">
+					<option value="getFile">Get File</option>
+					<option value="copyFile">Copy File</option>
+					<option value="createPerm">Create Permission</option>
 				</select>
-    </div>
-    <div class="form-row flex">
-        <label for="node-input-allDrives"><i class="fa fa-database"></i> Search in all Drives</label>
-        <input type="checkbox" id="node-input-allDrives">
-    </div>
-    <div class="form-row" id="node-input-targetName-row">
-        <label for="node-input-targetName"><i class="fa fa-file"></i> Copy name</label>
-        <input type="text" id="node-input-targetName" placeholder="Copy">
-    </div>
-    <div class="form-row" id="node-input-mime-row">
-        <label for="node-input-mime"><i class="fa fa-exchange"></i> Convert to</label>
-        <select name="mime" id="node-input-mime">
+		</div>
+		<div class="form-row flex">
+				<label for="node-input-allDrives"><i class="fa fa-database"></i> Search in all Drives</label>
+				<input type="checkbox" id="node-input-allDrives">
+		</div>
+		<div class="form-row" id="node-input-targetName-row">
+				<label for="node-input-targetName"><i class="fa fa-file"></i> Copy name</label>
+				<input type="text" id="node-input-targetName" placeholder="Copy">
+		</div>
+		<div class="form-row" id="node-input-mime-row">
+				<label for="node-input-mime"><i class="fa fa-exchange"></i> Convert to</label>
+				<select name="mime" id="node-input-mime">
 					<option selected value="nop">Do not convert</option>
 					<option value="document">Google Docs</option>
 					<option value="slides">Google Slides</option>
 					<option value="spreadsheets">Google Spreadsheets</option>
 				</select>
-    </div>
-
+		</div>
+		<div id="node-input-permParams">
+			<div class="form-row" id="node-input-permType-row">
+					<label for="node-input-permType"><i class="fa fa-user-plus"></i> Perm Type</label>
+					<select name="permType" id="node-input-permType">
+						<option value="user">User</option>
+						<option value="group">Group</option>
+						<option value="domain">Domain</option>
+						<option value="anyone">Anyone</option>
+					</select>
+			</div>
+			<div class="form-row" id="node-input-role-row">
+					<label for="node-input-role"><i class="fa fa-key"></i> Role</label>
+					<select name="role" id="node-input-role">
+						<option value="owner">Owner</option>
+						<option value="organizer">Organizer</option>
+						<option value="fileOrganizer">File Organizer</option>
+						<option value="writer">Writer</option>
+						<option value="commenter">Commenter</option>
+						<option value="reader">Reader</option>
+					</select>
+			</div>
+			<div class="form-row flex" id="node-input-emailAddress-row">
+					<label for="node-input-emailAddress"><i class="fa fa-address-card-o"></i> Email Address</label>
+					<input type="text" name="node-input-emailAddress" id="node-input-emailAddress" placeholder="user@domain.com">
+			</div>
+			<div class="form-row" id="node-input-domain-row">
+					<label for="node-input-domain"><i class="fa fa-building"></i> Domain</label>
+					<input type="text" name="node-input-domain" id="node-input-domain" placeholder="domain.com">
+			</div>
+			<div class="form-row flex" id="node-input-allowFileDiscovery-row">
+					<label for="node-input-allowFileDiscovery"><i class="fa fa-binoculars"></i> File Discovery</label>
+					<input type="checkbox" id="node-input-allowFileDiscovery">
+				</div>
+		</div>
 </script>
 
 <style type="text/css">
 .form-row.flex {
-  display: flex;
-  align-items: center;
+	display: flex;
+	align-items: center;
 }
 </style>
 
 <script type="text/html" data-help-name="google-drive">
-    <p>Let you access Google Drive API</p>
+		<p>Let you access Google Drive API</p>
 </script>

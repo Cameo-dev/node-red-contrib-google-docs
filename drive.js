@@ -31,12 +31,12 @@ module.exports = function exportFunc(RED) {
       try {
         const result = await ((op) => {
           switch (op) {
-            case 'get':
+            case 'getFile':
               return drive.files.get({
                 fileId,
                 supportsAllDrives,
               });
-            case 'copy':
+            case 'copyFile':
               return drive.files.copy({
                 fileId,
                 supportsAllDrives,
@@ -45,6 +45,30 @@ module.exports = function exportFunc(RED) {
                   mimeType: mimeType[msg.payload.mime || config.mime],
                 },
               });
+            case 'createPerm': {
+              const type = msg.payload.permType || config.permType;
+              const resource = {
+                type,
+                role: msg.payload.role || config.role,
+              };
+              switch (type) {
+                case 'user':
+                case 'group':
+                  resource.emailAddress = msg.payload.emailAddress || config.emailAddress;
+                  break;
+                case 'domain':
+                  resource.domain = msg.payload.domain || config.domain;
+                // falls through
+                default:
+                  resource.allowFileDiscovery = msg.payload.allowFileDiscovery
+                    || config.allowFileDiscovery;
+              }
+              return drive.permissions.create({
+                fileId,
+                supportsAllDrives,
+                resource,
+              });
+            }
             default: throw new Error(`Unsupported operation ${op}`);
           }
         })(operation);
