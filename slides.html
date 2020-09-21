@@ -7,7 +7,7 @@
 			admin: {type: 'google auth', required: true},
 			fileId: {value: ""},
 			operation: {value: "get"},
-      batch: {value: []}
+			batch: {value: []}
 		},
 		inputs:1,
 		outputs:1,
@@ -15,7 +15,7 @@
 		label: function() {
 			return this.name || "Google Slides";
 		},
-    oneditprepare: function () {
+		oneditprepare: function () {
 			$("#node-input-operation").on("change", function() {
 				const val = $(this).val();
 				if(val === 'batch') {
@@ -24,190 +24,194 @@
 					$("#node-input-batch-row").hide();
 				}
 			});
-      const listContainer = $('#node-input-batch-container');
+			const listContainer = $('#node-input-batch-container');
 
-      listContainer
-        .css('min-height', '250px')
-        .css('min-width', '300px')
-        .editableList({
-          header: $('<div>').append('<p>Request</p>'),
-          addItem(container, i, data) {
-            container.css({
-              overflow: 'hidden',
-              whiteSpace: 'nowrap'
-            });
+			listContainer
+				.css('min-height', '250px')
+				.css('min-width', '300px')
+				.editableList({
+					header: $('<div>').append('<p>Request</p>'),
+					addItem(container, i, data) {
+						container.css({
+							overflow: 'hidden',
+							whiteSpace: 'nowrap'
+						});
 
-            // batch option item
-            let baseRow = $('<div/>', {
-              class: 'input-batch-row'
-            }).appendTo(container);
+						// batch option item
+						let baseRow = $('<div/>', {
+							class: 'input-batch-row'
+						}).appendTo(container);
 
-            let textType = $('<input type="hidden" class="target-type">')
-            .appendTo(baseRow);
+						let textType = $('<input type="hidden" class="target-type">')
+						.appendTo(baseRow);
 
-            let methodSelect = $('<select/>', {
-              class: 'node-input-batch-method'
-            }).appendTo(baseRow)
-            .append('<option value="replaceAllText">Replace All</option>')
-            .append('<option value="replaceText">Replace</option>')
+						let methodSelect = $('<select/>', {
+							class: 'node-input-batch-method'
+						}).appendTo(baseRow)
+						.append('<option value="replaceAllText">Replace All</option>')
+						.append('<option value="replaceText">Replace</option>')
 
-            //methodSelect.selectedIndex = 0;
+						//methodSelect.selectedIndex = 0;
 
-            // Targeted text
-            let targetInput = $('<input/>', {
-              class: 'node-input-replace-target',
-              required: 'required',
-              type: 'text'
-            }).appendTo(baseRow)
-            .typedInput({
-              default: 'str',
-              types: ['msg', 'str'],
-              typeField: '.target-type'
-            })
-            .width('190px');
+						// Targeted text
+						let targetInput = $('<input/>', {
+							class: 'node-input-replace-target',
+							required: 'required',
+							type: 'text'
+						}).appendTo(baseRow)
+						.typedInput({
+							default: 'str',
+							types: ['msg', 'str'],
+							typeField: '.target-type'
+						})
+						.width('190px');
 
 
-            // Replacement
-            let replacementStrRow = $('<div/>', {
-              class: 'input-batch-row'
-            })
-            .appendTo(container)
-            .append('<p>replace with</p>');
+						// Replacement
+						let replacementStrRow = $('<div/>', {
+							class: 'input-batch-row'
+						})
+						.appendTo(container)
+						.append('<p>replace with</p>');
 
-            let replacementInput = $('<input/>', {
-              class: 'node-input-replace-replacement',
-              type: 'text',
-              required: 'required'
-            }).appendTo(replacementStrRow);
+						let replacementInput = $('<input/>', {
+							class: 'node-input-replace-replacement',
+							type: 'text',
+							required: 'required'
+						}).appendTo(replacementStrRow);
 
-            // Match Case
-            let matchCaseRow = $('<div/>', {
-              class: 'input-batch-row'
-            })
-            .appendTo(container)
-            .append('<p>match case</p>');
+						// Match Case
+						let matchCaseRow = $('<div/>', {
+							class: 'input-batch-row'
+						})
+						.appendTo(container)
+						.append('<p>match case</p>');
 
-            let matchCaseInput = $('<input/>', {
-              class: 'node-input-match-case',
-              type: 'checkbox'
-            }).appendTo(matchCaseRow);
+						let matchCaseInput = $('<input/>', {
+							class: 'node-input-match-case',
+							type: 'checkbox'
+						}).appendTo(matchCaseRow);
 
-            methodSelect.change(function () {
-              let op = $(this).val();
-              switch (op) {
-                case 'replaceAllText':
-                  targetInput.show();
-                  replacementInput.show();
-                  matchCaseInput.show();
-                  break;
-              }
-            });
+						methodSelect.change(function () {
+							let op = $(this).val();
+							switch (op) {
+								case 'replaceAllText':
+									targetInput.show();
+									replacementInput.show();
+									matchCaseInput.show();
+									break;
+							}
+						});
 
-            if(Object.keys(data).length) {
-              methodSelect.val(data.method).change();
+						if(Object.keys(data).length) {
+							methodSelect.val(data.method).change();
 
-              switch (data.method) {
-                case 'replaceAllText':
-                  targetInput.typedInput('value', data.text);
-                  replacementInput.val(data.replaceText);
-                  matchCaseInput.prop('checked', data.matchCase);
-                  break;
-              }
-            }
-          },
-          removable: true,
-          sortable: true
-        });
+							switch (data.method) {
+								case 'replaceAllText':
+									targetInput.typedInput('value', data.text);
+									replacementInput.val(data.replaceText);
+									matchCaseInput.prop('checked', data.matchCase);
+									break;
+							}
+						}
+					},
+					removable: true,
+					sortable: true
+				});
 
-      this.batch.forEach(req => listContainer.editableList('addItem', req));
-    },
-    oneditsave: function () {
-      const batchItems = $('#node-input-batch-container').editableList('items');
-      const batch = [];
+			this.batch.forEach(req => listContainer.editableList('addItem', req));
+		},
+		oneditsave: function () {
+			const batchItems = $('#node-input-batch-container').editableList('items');
+			const batch = [];
 
-      batchItems.each(function() {
-        const queries = $(this);
-        const method = queries.find('.node-input-batch-method').val();
+			batchItems.each(function() {
+				const queries = $(this);
+				const method = queries.find('.node-input-batch-method').val();
 
-        switch (method) {
-          case 'replaceAllText':
-            const text = queries.find('.node-input-replace-target').val();
-            const textType = queries.find('.target-type').val();
-            const replaceText = queries.find('.node-input-replace-replacement').val();
-            const matchCase = queries.find('.node-input-match-case').prop('checked');
-            batch.push({
-              method,
-              text,
-              textType,
-              replaceText,
-              matchCase,
-            });
-            break;
-        }
-      });
+				switch (method) {
+					case 'replaceAllText':
+						const text = queries.find('.node-input-replace-target').val();
+						const textType = queries.find('.target-type').val();
+						const replaceText = queries.find('.node-input-replace-replacement').val();
+						const matchCase = queries.find('.node-input-match-case').prop('checked');
+						batch.push({
+							method,
+							text,
+							textType,
+							replaceText,
+							matchCase,
+						});
+						break;
+				}
+			});
 
-      this.batch = batch;
-    }
-  });
+			this.batch = batch;
+		}
+	});
 </script>
 
 <script type="text/html" data-template-name="google-slides">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-admin"><i class="fa fa-cogs"></i> Admin</label>
-        <input type="text" id="node-input-admin" placeholder="Admin">
-    </div>
-    <div class="form-row">
-        <label for="node-input-fileId"><i class="fa fa-file-o"></i> File ID</label>
-        <input type="text" id="node-input-fileId" placeholder="File ID">
-    </div>
-    <div class="form-row">
-        <label for="node-input-operation"><i class="fa fa-magic"></i> Operation</label>
-        <select name="operation" id="node-input-operation">
+		<div class="form-row">
+				<label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+				<input type="text" id="node-input-name" placeholder="Name">
+		</div>
+		<div class="form-row">
+				<label for="node-input-admin"><i class="fa fa-cogs"></i> Admin</label>
+				<input type="text" id="node-input-admin" placeholder="Admin">
+		</div>
+		<div class="form-row">
+				<label for="node-input-fileId"><i class="fa fa-file-o"></i> File ID</label>
+				<input type="text" id="node-input-fileId" placeholder="File ID">
+		</div>
+		<div class="form-row">
+				<label for="node-input-operation"><i class="fa fa-magic"></i> Operation</label>
+				<select name="operation" id="node-input-operation">
 					<option value="get">Get</option>
 					<option value="batch">Batch Update</option>
 				</select>
-    </div>
-    <div class="form-row" id="node-input-batch-row">
-      <label><i class="fa fa-list"></i> Batch</label>
-      <div class="node-input-batch-container-row">
-          <ol id="node-input-batch-container"></ol>
-      </div>
-    </div>
+		</div>
+		<div class="form-row" id="node-input-batch-row">
+			<label><i class="fa fa-list"></i> Batch</label>
+			<div class="node-input-batch-container-row">
+					<ol id="node-input-batch-container"></ol>
+			</div>
+		</div>
 </script>
 
 <style type="text/css">
-  .input-batch-row .node-input-batch-method {
-    width: auto;
-    margin-right: 5px;
-  }
+	.input-batch-row .node-input-batch-method {
+		width: auto;
+		margin-right: 5px;
+	}
 
-  .input-batch-row {
-    margin-top: 5px;
-  }
+	.input-batch-row {
+		margin-top: 5px;
+	}
 
-  .input-batch-row > * {
-    display: inline-block;
-  }
+	.input-batch-row > * {
+		display: inline-block;
+	}
 
-  .input-replace-label {
-    width: 121px;
-    margin-right: 10px;
-    text-align: right;
-  }
+	.input-replace-label {
+		width: 121px;
+		margin-right: 10px;
+		text-align: right;
+	}
 
-   /*#node-input-batch-row .node-input-batch-container-row input {
-    width: 200px;
-  }*/
+	.red-ui-typedInput-input-wrap {
+		display: inline-block;
+	}
+
+	 /*#node-input-batch-row .node-input-batch-container-row input {
+		width: 200px;
+	}*/
 
  .input-batch-row > p {
-    margin: 0 20px 0 5px;
+		margin: 0 20px 0 5px;
  }
 </style>
 
 <script type="text/html" data-help-name="google-slides">
-    <p>Let you access Google Slides API</p>
+		<p>Let you access Google Slides API</p>
 </script>
