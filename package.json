@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-google-docs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Let you access the Google Docs API from NodeRED",
   "main": "drive.js",
   "scripts": {
