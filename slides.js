@@ -31,13 +31,16 @@ module.exports = function exportFunc(RED) {
             case 'batch':
               return slides.presentations.batchUpdate({
                 presentationId,
-                requestBody: {
-                  requests: msg.payload.batch || config.batch,
-                  // containsText: {
-                // text,
-                // matchCase
-                  // },
-                  // replaceText
+                resource: {
+                  requests: msg.payload.batch || {
+                    [config.batch.method]: {
+                      containsText: {
+                        text: config.batch.text,
+                        matchCase: config.batch.matchCase,
+                      },
+                      replaceText: config.batch.replaceText,
+                    },
+                  },
                 },
               });
             default: throw new Error(`Unsupported operation ${op}`);
