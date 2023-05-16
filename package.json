@@ -32,7 +32,7 @@
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-ava": "^10.3.0",
     "eslint-plugin-import": "^2.20.2",
-    "node-red": "^1.0.6",
+    "node-red": "^3.0.2",
     "node-red-node-test-helper": "github:JbIPS/node-red-node-test-helper"
   }
 }
